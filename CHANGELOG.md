@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-08-13
+
+- Improved README formatting for the HACS interface.
+- Added prominent HACS and manual installation instructions.
+- Added the integration icon to the README.
+
 ## 0.1.0 - 2026-08-13
 
 - Established the standalone `kamado_joe` integration domain and Kamado Joe

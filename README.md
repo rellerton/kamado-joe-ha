@@ -1,5 +1,9 @@
 # Kamado Joe for Home Assistant
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/rellerton/kamado-joe-ha/main/custom_components/kamado_joe/brand/icon%402x.png" alt="Kamado Joe integration icon" width="160">
+</p>
+
 An experimental, unofficial Home Assistant custom integration for connected
 Kamado Joe grills. It reads live grill telemetry and retained cook history from
 Kamado Joe's cloud.
@@ -11,15 +15,56 @@ Kamado Joe's cloud.
 > time. Never use Home Assistant telemetry as the sole indication that a
 > live-fire appliance is safe, cool, or powered off.
 
-## Model status
+## Installation
 
-| Product | Cloud model | Profile | Probe slots | Evidence |
-|---|---|---|---:|---|
-| Konnected Joe | `C:G:018:1:D` | Tested | 3 | Physical grill, current shadow, and 32 retained cooks; firmware `02.00.30` |
-| Big Konnected Joe | `C:G:024:1:D` | Experimental, untested | 3 | Kamado Joe catalog and product documentation only |
-| Pellet Joe | `P:G:018:1:D` | Experimental, untested | 2 | Kamado Joe catalog and product documentation only |
+### Install with HACS
 
-The two untested profiles make conservative assumptions from their shared
+1. Open **HACS** in Home Assistant.
+2. Select **Integrations**.
+3. Open the three-dot menu and select **Custom repositories**.
+4. Enter `https://github.com/rellerton/kamado-joe-ha`.
+5. Select **Integration** as the category, then choose **Add**.
+6. Find **Kamado Joe (Unofficial)** and select **Download**.
+7. Restart Home Assistant when HACS requests it.
+8. Open **Settings > Devices & services**.
+9. Select **Add integration** and choose **Kamado Joe (Unofficial)**.
+10. Sign in with the Kamado Joe account that owns the grill.
+
+### Manual installation
+
+1. Download the latest release from GitHub.
+2. Copy `custom_components/kamado_joe` into the Home Assistant configuration
+   directory at `custom_components/kamado_joe`.
+3. Restart Home Assistant.
+4. Add **Kamado Joe (Unofficial)** from **Settings > Devices & services**.
+
+Review the release notes before upgrading. The integration depends on an
+undocumented cloud interface and compatibility can change without notice.
+
+## Supported models
+
+### Konnected Joe
+
+- Cloud model: `C:G:018:1:D`
+- Status: **Tested on physical hardware**
+- Probe slots: 3
+- Evidence: current device shadow, 32 retained cooks, and firmware `02.00.30`
+
+### Big Konnected Joe
+
+- Cloud model: `C:G:024:1:D`
+- Status: **Experimental and untested**
+- Assumed probe slots: 3
+- Evidence: product catalog and documentation only
+
+### Pellet Joe
+
+- Cloud model: `P:G:018:1:D`
+- Status: **Experimental and untested**
+- Assumed probe slots: 2
+- Evidence: product catalog and documentation only
+
+The untested profiles make conservative assumptions from their shared
 Kamado Joe cloud catalog: grill and target temperature, power, heating, fan
 speed, high/low temperature alerts, errors, signal strength, cook history, and
 the documented number of meat-probe ports. They may be incomplete or wrong.
@@ -35,8 +80,8 @@ than inheriting another grill's capabilities.
 - Paired-grill discovery and selection
 - Current AWS Device Shadow state through the Kamado Joe CAS API
 - Grill temperature and target-temperature sensors
-- Power, temperature-control demand, at-target-temperature, and high/low alert binary
-  sensors
+- Power, temperature-control demand, at-target-temperature, and high/low alert
+  binary sensors
 - Fan-speed output and Wi-Fi signal diagnostics
 - Up to three model-gated meat-probe temperatures and targets
 - Device-report timestamp, data age, and stale-data warning
@@ -65,25 +110,6 @@ The official app uses a separate AWS IoT certificate and MQTT path for writes.
 No write will be implemented from a guessed or borrowed payload. Power and the
 Automatic Fire Starter remain physical-only unless Kamado Joe documents and
 exposes a safe remote contract.
-
-## Installation
-
-This integration is currently distributed as an experimental HACS custom
-repository. It has been exercised with Home Assistant 2026.8.1, but only the
-Konnected Joe profile has been tested on physical hardware.
-
-1. In HACS, open **Integrations**.
-2. Open the three-dot menu and choose **Custom repositories**.
-3. Add `https://github.com/rellerton/kamado-joe-ha` and select **Integration**.
-4. Find **Kamado Joe (Unofficial)** in HACS and install it.
-5. Restart Home Assistant when HACS requests it.
-6. Go to **Settings > Devices & services > Add integration**, search for
-   **Kamado Joe (Unofficial)**, and authenticate with the Kamado Joe account
-   that owns the grill.
-
-HACS installs only `custom_components/kamado_joe`; repository documentation,
-tests, and development files are not copied into Home Assistant. Because the
-cloud interface is undocumented, review release notes before upgrading.
 
 ## Diagnostics and data freshness
 
@@ -120,9 +146,9 @@ physically powering on when that delay is undesirable.
 
 ### At-target-temperature sensors
 
-**At target temperature** and the per-probe **At target temperature** entities are derived
-locally by comparing the current reading with its target using a 5°F/3°C
-tolerance. The cloud does not report an explicit “target reached” state.
+**At target temperature** and the per-probe **At target temperature** entities
+are derived locally by comparing the current reading with its target using a
+5°F/3°C tolerance. The cloud does not report an explicit “target reached” state.
 
 - The grill calculation still needs validation during a real, ignited cook.
 - The probe calculations are structurally identical but are not actively
