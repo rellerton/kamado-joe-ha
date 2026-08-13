@@ -1,0 +1,124 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kamado Joe",
+        "description": "Sign in with your Kamado Joe app account. These are the same credentials you use in the Kamado Joe mobile app; they are stored locally in Home Assistant and only sent to Kamado Joe's own cloud.",
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
+      },
+      "device": {
+        "title": "Choose your grills",
+        "description": "Your account has more than one paired grill. Pick the ones to add to Home Assistant.",
+        "data": {
+          "devices": "Grills"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Sign in again",
+        "description": "Kamado Joe rejected the saved password for {email}. Enter it again to reconnect.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid email or password.",
+      "cannot_connect": "Failed to connect to the Kamado Joe cloud.",
+      "no_devices": "That account signed in, but has no paired grills. Pair the grill in the Kamado Joe app first."
+    },
+    "abort": {
+      "already_configured": "This account is already configured.",
+      "reauth_successful": "Reconnected to the Kamado Joe cloud."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Kamado Joe options",
+        "data": {
+          "scan_interval": "Active polling interval",
+          "idle_scan_interval": "Stale polling interval",
+          "stale_after": "Treat data as stale after",
+          "track_history": "Track current-cook history"
+        },
+        "data_description": {
+          "scan_interval": "How often to poll while at least one grill is freshly reporting as powered on.",
+          "idle_scan_interval": "How often to poll after every grill has been logically off or stopped reporting for the configured grace period. Active-cook discovery can take up to this long; press Refresh data for an immediate check.",
+          "stale_after": "Grace period before polling backs off when every grill is logically off or no longer reporting. The Stale data sensor itself turns on only for missing reports.",
+          "track_history": "Records a downsampled series for the current cook, for charting. Turn off if you only chart from Recorder history."
+        }
+      }
+    }
+  },
+  "services": {
+    "get_cook_history": {
+      "name": "Get cook history",
+      "description": "Returns a cook as chartable series. Reads Home Assistant's own recorded history when it covers the cook, and falls back to Kamado Joe's cloud when it does not. Returned as a response; nothing is written to entity state.",
+      "fields": {
+        "device_id": {
+          "name": "Grill",
+          "description": "Which grill to fetch a cook for."
+        },
+        "session_id": {
+          "name": "Cook ID",
+          "description": "A specific cook to fetch. Leave empty for the most recent one. Use 'List cooks' to find IDs."
+        },
+        "max_points": {
+          "name": "Maximum points",
+          "description": "Thin each series to at most this many points. A long cook can be several thousand samples."
+        },
+        "source": {
+          "name": "Source",
+          "description": "Auto reads locally when recorded history covers the cook and uses the cloud otherwise. Local never leaves Home Assistant. Cloud always fetches from Kamado Joe, at roughly 10-second resolution."
+        }
+      }
+    },
+    "list_cooks": {
+      "name": "List cooks",
+      "description": "Lists every cook Kamado Joe's cloud still holds, newest first, including cooks from before Home Assistant knew about the grill. Returns IDs and timings only, no sample data.",
+      "fields": {
+        "device_id": {
+          "name": "Grill",
+          "description": "Which grill to list cooks for."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "grill_temp": { "name": "Grill temperature" },
+      "target_temp": { "name": "Target temperature" },
+      "heat_intensity": { "name": "Fan speed" },
+      "rssi": { "name": "Signal strength" },
+      "probe1_temp": { "name": "Probe 1 temperature" },
+      "probe1_target": { "name": "Probe 1 target" },
+      "probe2_temp": { "name": "Probe 2 temperature" },
+      "probe2_target": { "name": "Probe 2 target" },
+      "probe3_temp": { "name": "Probe 3 temperature" },
+      "probe3_target": { "name": "Probe 3 target" },
+      "error": { "name": "Error" },
+      "last_reported": { "name": "Last reported" },
+      "data_age": { "name": "Data age" },
+      "cook_start": { "name": "Cook start" },
+      "last_cook": { "name": "Last cook" }
+    },
+    "binary_sensor": {
+      "power": { "name": "Power" },
+      "heating": { "name": "Temperature control active" },
+      "problem": { "name": "Problem" },
+      "high_temperature_alert": { "name": "High temperature alert" },
+      "low_temperature_alert": { "name": "Low temperature alert" },
+      "target_reached": { "name": "At target temperature" },
+      "probe1_reached": { "name": "Probe 1 at target temperature" },
+      "probe2_reached": { "name": "Probe 2 at target temperature" },
+      "probe3_reached": { "name": "Probe 3 at target temperature" },
+      "stale": { "name": "Stale data" }
+    },
+    "button": {
+      "refresh": { "name": "Refresh data" }
+    }
+  }
+}

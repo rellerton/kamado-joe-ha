@@ -1,0 +1,22 @@
+{
+  "model": "C:G:018:1:D",
+  "vers": "02.00.30",
+  "update": 0,
+  "trigger": 0,
+  "pwrOn": false,
+  "fah": true,
+  "doorOpn": false,
+  "lidOpn": false,
+  "heat": {
+    "t2": {"heating": false},
+    "t1": {"heating": false},
+    "t3": {"heating": false},
+    "t4": {"heating": false}
+  },
+  "notifications": {"high_temp": 0, "low_temp": 0},
+  "accs": {"mode": 0},
+  "errors": [0, 0, 0, 0, 0],
+  "RSSI": -68,
+  "engaged": false,
+  "probes": {}
+}
