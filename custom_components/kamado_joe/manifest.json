@@ -4,7 +4,6 @@
   "after_dependencies": ["recorder"],
   "codeowners": ["@rellerton"],
   "config_flow": true,
-  "diagnostics": true,
   "documentation": "https://github.com/rellerton/kamado-joe-ha",
   "integration_type": "device",
   "iot_class": "cloud_polling",
