@@ -1,8 +1,8 @@
 # Dashboard notes
 
-No Kamado Joe-specific dashboard card is bundled yet. During development, add
-the integration's entities through Home Assistant's normal entity cards rather
-without depending on a brand-specific companion card.
+No Kamado Joe-specific dashboard card is bundled. For a custom dashboard, add
+the integration's entities through Home Assistant's normal entity cards without
+depending on a brand-specific companion card.
 
 Useful entities include:
 

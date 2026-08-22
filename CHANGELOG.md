@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 - 2026-08-21
+
+- Promoted the hardware-validated Konnected Joe integration to a stable release.
+- Clarified the independent, community-maintained, and read-only project scope.
+- Simplified public documentation and retained clear validation caveats for
+  catalog-only grill profiles.
+
 ## 0.1.1 - 2026-08-13
 
 - Improved README formatting for the HACS interface.

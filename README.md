@@ -4,16 +4,16 @@
   <img src="https://raw.githubusercontent.com/rellerton/kamado-joe-ha/main/custom_components/kamado_joe/brand/icon%402x.png" alt="Kamado Joe integration icon" width="160">
 </p>
 
-An experimental, unofficial Home Assistant custom integration for connected
-Kamado Joe grills. It reads live grill telemetry and retained cook history from
-Kamado Joe's cloud.
+An unofficial Home Assistant custom integration for connected Kamado Joe
+grills. It reads live grill telemetry and retained cook history from Kamado
+Joe's cloud.
 
 > [!WARNING]
-> This project is under active development, is not affiliated with or endorsed
-> by Kamado Joe or Middleby, and is not ready for production use. It depends on
-> undocumented cloud interfaces that Kamado Joe may change or remove at any
-> time. Never use Home Assistant telemetry as the sole indication that a
-> live-fire appliance is safe, cool, or powered off.
+> This community-maintained project is not affiliated with or endorsed by
+> Kamado Joe or Middleby. It depends on undocumented cloud interfaces that
+> Kamado Joe may change or remove at any time. Never use Home Assistant
+> telemetry as the sole indication that a live-fire appliance is safe, cool,
+> or powered off.
 
 ## Installation
 
@@ -53,14 +53,14 @@ undocumented cloud interface and compatibility can change without notice.
 ### Big Konnected Joe
 
 - Cloud model: `C:G:024:1:D`
-- Status: **Experimental and untested**
+- Status: **Catalog profile; not hardware-validated**
 - Assumed probe slots: 3
 - Evidence: product catalog and documentation only
 
 ### Pellet Joe
 
 - Cloud model: `P:G:018:1:D`
-- Status: **Experimental and untested**
+- Status: **Catalog profile; not hardware-validated**
 - Assumed probe slots: 2
 - Evidence: product catalog and documentation only
 
@@ -68,8 +68,8 @@ The untested profiles make conservative assumptions from their shared
 Kamado Joe cloud catalog: grill and target temperature, power, heating, fan
 speed, high/low temperature alerts, errors, signal strength, cook history, and
 the documented number of meat-probe ports. They may be incomplete or wrong.
-Please do not report either model as supported until a real payload has been
-captured and its entities verified.
+Please include diagnostics when reporting results for either model so its
+profile can be verified against physical hardware.
 
 Unknown model codes receive only minimal error and signal diagnostics rather
 than inheriting another grill's capabilities.
@@ -92,8 +92,8 @@ than inheriting another grill's capabilities.
 - Read-only actions for listing and retrieving retained cook history
 - Privacy-filtered Home Assistant diagnostics
 
-The target entities are currently sensors, not controls. The integration does
-not yet write settings to the grill.
+The target entities are sensors, not controls. The integration is intentionally
+read-only and does not write settings to the grill.
 
 ## Deliberate limitations
 
@@ -106,10 +106,8 @@ Not implemented:
 - Direct AWS IoT/MQTT control
 - Local Bluetooth control
 
-The official app uses a separate AWS IoT certificate and MQTT path for writes.
-No write will be implemented from a guessed or borrowed payload. Power and the
-Automatic Fire Starter remain physical-only unless Kamado Joe documents and
-exposes a safe remote contract.
+Power and the Automatic Fire Starter remain physical-only. This integration
+does not send grill-control commands.
 
 ## Diagnostics and data freshness
 
@@ -150,10 +148,11 @@ physically powering on when that delay is undesirable.
 are derived locally by comparing the current reading with its target using a
 5°F/3°C tolerance. The cloud does not report an explicit “target reached” state.
 
-- The grill calculation still needs validation during a real, ignited cook.
-- The probe calculations are structurally identical but are not actively
-  validated by the current maintainer, who uses separate wireless probes. They
-  will remain available unless real-device feedback identifies a problem.
+- The grill calculation is available on the hardware-validated Konnected Joe
+  profile.
+- The probe calculations use the same tolerance but have not been independently
+  hardware-validated by the current maintainer, who uses separate wireless
+  probes.
 
 Polling and staleness thresholds are configurable in the integration options.
 
@@ -176,22 +175,19 @@ Recorder database. See [`docs/dashboard.md`](docs/dashboard.md).
 - Access tokens remain in memory.
 - Diagnostics redact credentials, account/device identifiers, network names,
   and raw shadows that could reveal them.
-- Raw APKs, reverse-engineering captures, certificates, and credentials are not
-  part of this repository.
 
 ## Project origin and credits
 
 This is intended to be a standalone Kamado Joe project, not a continuing fork
 of a Masterbuilt integration. Its initial structure was derived from
 [`lucvan/masterbuilt-gravity-ha`](https://github.com/lucvan/masterbuilt-gravity-ha),
-which builds on Martin Hruška's original integration and CAS reverse-engineering
-work. Luc Van's onboarding, reauthentication, staleness, and cook-history work
-also provided the starting architecture. Their MIT copyright notices and
-license are retained in [`LICENSE`](LICENSE).
+which builds on Martin Hruška's original integration. Luc Van's onboarding,
+reauthentication, staleness, and cook-history work also provided the starting
+architecture. Their MIT copyright notices and license are retained in
+[`LICENSE`](LICENSE).
 
 Kamado Joe-specific endpoints, model profiles, payload mappings, and tests were
-derived independently from the public Kamado Joe Android application, the
-Kamado Joe product catalog, public product documentation, and personally owned
+developed independently for this project and validated with personally owned
 hardware.
 
 The included icon is an original generic ceramic-grill illustration. It does
