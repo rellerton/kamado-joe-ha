@@ -4,18 +4,19 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from custom_components.kamado_joe.button import KamadoJoeRefreshButton
 from custom_components.kamado_joe.const import (
     active_errors,
     binary_sensor_keys,
     error_text,
     model_name,
     probe_numbers,
-    sensor_keys,
     probe_present,
+    sensor_keys,
+    target_or_none,
     target_reached,
 )
 from custom_components.kamado_joe.history import series_from_snapshots
-from custom_components.kamado_joe.button import KamadoJoeRefreshButton
 from custom_components.kamado_joe.sensor import PROBE_SENSORS, SENSORS
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -77,6 +78,54 @@ def test_history_extracts_kamado_shadow_shape() -> None:
     assert unit == "°F"
     assert series["grill"] == [[10, 225.0]]
     assert series["target"] == [[10, 250.0]]
+
+
+def test_history_normalizes_a_mid_cook_unit_change() -> None:
+    """Cloud history must not chart an artificial jump after a unit change."""
+    snapshots = [
+        {
+            "timestamp": 110,
+            "shadow": {
+                "fah": True,
+                "mainTemp": 212,
+                "heat": {"t2": {"trgt": 250}},
+            },
+        },
+        {
+            "timestamp": 120,
+            "shadow": {
+                "fah": False,
+                "mainTemp": 100,
+                "heat": {"t2": {"trgt": 121}},
+            },
+        },
+    ]
+
+    series, unit = series_from_snapshots(snapshots, start=100)
+
+    assert unit == "°C"
+    assert series["grill"] == [[10, 100.0], [20, 100.0]]
+    assert series["target"] == [[10, 121.1], [20, 121.0]]
+
+
+def test_both_unit_dependent_unset_targets_are_ignored() -> None:
+    """The cloud uses 0 F or its rounded Celsius equivalent for no target."""
+    assert target_or_none(0) is None
+    assert target_or_none(-17) is None
+    assert target_or_none(225) == 225
+
+    snapshots = [
+        {
+            "timestamp": 110,
+            "shadow": {"fah": True, "heat": {"t2": {"trgt": 0}}},
+        },
+        {
+            "timestamp": 120,
+            "shadow": {"fah": False, "heat": {"t2": {"trgt": -17}}},
+        },
+    ]
+    series, _ = series_from_snapshots(snapshots, start=100)
+    assert "target" not in series
 
 
 def test_temperatures_are_unknown_while_controller_is_off() -> None:

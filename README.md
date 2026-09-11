@@ -6,7 +6,7 @@
 
 An unofficial Home Assistant custom integration for connected Kamado Joe
 grills. It reads live grill telemetry and retained cook history from Kamado
-Joe's cloud.
+Joe's cloud and intentionally never sends control commands to the appliance.
 
 > [!WARNING]
 > This community-maintained project is not affiliated with or endorsed by
@@ -14,6 +14,21 @@ Joe's cloud.
 > Kamado Joe may change or remove at any time. Never use Home Assistant
 > telemetry as the sole indication that a live-fire appliance is safe, cool,
 > or powered off.
+
+## Choose the integration that fits your use case
+
+This project is a Kamado Joe-specific, intentionally **read-only** integration.
+It is largely derived from Luc Van's excellent
+[`masterbuilt-gravity-ha`](https://github.com/lucvan/masterbuilt-gravity-ha),
+with a separate `kamado_joe` domain, conservative model profiles, and a design
+that prevents Home Assistant from changing grill or probe targets.
+
+If you want to control grill and probe setpoints from Home Assistant, or support
+both Masterbuilt and Kamado Joe appliances from one integration, use
+[`lucvan/masterbuilt-gravity-ha`](https://github.com/lucvan/masterbuilt-gravity-ha).
+Its Kamado Joe telemetry and target controls have been independently tested on
+a Konnected Joe. The projects remain separate but welcome useful fixes and
+evidence from one another.
 
 ## Installation
 
@@ -178,8 +193,8 @@ Recorder database. See [`docs/dashboard.md`](docs/dashboard.md).
 
 ## Project origin and credits
 
-This is intended to be a standalone Kamado Joe project, not a continuing fork
-of a Masterbuilt integration. Its initial structure was derived from
+This is intentionally maintained as a standalone, read-only Kamado Joe project,
+but it is largely derived from
 [`lucvan/masterbuilt-gravity-ha`](https://github.com/lucvan/masterbuilt-gravity-ha),
 which builds on Martin Hruška's original integration. Luc Van's onboarding,
 reauthentication, staleness, and cook-history work also provided the starting

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+from typing import Any
 
 DOMAIN = "kamado_joe"
 
@@ -113,6 +114,19 @@ def binary_sensor_keys(model: str | None) -> frozenset[str]:
 
 # Target temperature sentinel meaning "not set / off" (0 F == ~-17 C).
 TARGET_OFF = -17
+
+
+def target_or_none(value: Any) -> Any:
+    """Return a target value, or None for either observed unset sentinel.
+
+    The grill expresses the unset value in its selected temperature unit:
+    ``0`` in Fahrenheit and ``-17`` in Celsius. Neither is a valid cooking
+    target for the supported grills.
+    """
+    if value is None or (isinstance(value, (int, float)) and value <= 0):
+        return None
+    return value
+
 
 # The grill/app fire their "reached" notification a few degrees below the
 # setpoint (observed ~2 C; the exact offset isn't cleanly exposed). Applied to

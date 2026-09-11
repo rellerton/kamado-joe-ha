@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1 - 2026-09-11
+
+- Added a prominent cross-link to `lucvan/masterbuilt-gravity-ha` for users who
+  want Home Assistant setpoint control or combined Masterbuilt/Kamado support.
+- Normalized retained cloud-history temperatures when the grill's selected unit
+  changes during a cook.
+- Recognized both observed unit-dependent unset-target values: `0` in
+  Fahrenheit and `-17` in Celsius.
+
 ## 1.0.0 - 2026-08-21
 
 - Promoted the hardware-validated Konnected Joe integration to a stable release.

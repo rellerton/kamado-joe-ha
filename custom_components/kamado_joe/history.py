@@ -14,7 +14,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from .const import TARGET_OFF
+from homeassistant.util.unit_conversion import TemperatureConverter
+
+from .const import target_or_none
 
 
 def _grill(r: dict[str, Any]) -> Any:
@@ -22,8 +24,7 @@ def _grill(r: dict[str, Any]) -> Any:
 
 
 def _target(r: dict[str, Any]) -> Any:
-    val = r.get("heat", {}).get("t2", {}).get("trgt")
-    return None if val is None or val == TARGET_OFF else val
+    return target_or_none(r.get("heat", {}).get("t2", {}).get("trgt"))
 
 
 def _probe(n: int):
@@ -55,6 +56,14 @@ EXTRACTORS = {
 }
 
 
+def _snapshot_unit(snapshot: dict[str, Any]) -> str | None:
+    """Return the temperature unit active for a cloud snapshot, if declared."""
+    shadow = snapshot.get("shadow") or {}
+    if "fah" not in shadow:
+        return None
+    return "°F" if shadow.get("fah") else "°C"
+
+
 def decimate(points: list[list[float]], limit: int) -> list[list[float]]:
     """Evenly thin a series to at most ``limit`` points, keeping both endpoints."""
     if len(points) <= limit:
@@ -72,24 +81,31 @@ def series_from_snapshots(
     """Turn cloud session snapshots into offset series, oldest first.
 
     The API returns snapshots newest-first; charts want the opposite. Points are
-    ``[seconds_since_session_start, value]``. Returns ``(series, unit)``, unit
-    read from the first snapshot that carries the ``fah`` flag.
+    ``[seconds_since_session_start, value]``. Returns ``(series, unit)``.
+
+    A unit change on the grill can split one cook across Fahrenheit and Celsius
+    snapshots. Normalize every point to the unit active at the end of the cook
+    so a chart does not show an artificial temperature jump.
     """
     ordered = sorted(snapshots, key=lambda s: s.get("timestamp") or 0)
     series: dict[str, list[list[float]]] = {name: [] for name in EXTRACTORS}
-    unit: str | None = None
+    declared = [u for u in (_snapshot_unit(s) for s in ordered) if u]
+    unit = declared[-1] if declared else None
+    current_unit = declared[0] if declared else None
 
     for snap in ordered:
         shadow = snap.get("shadow") or {}
-        if unit is None and "fah" in shadow:
-            unit = "°F" if shadow.get("fah") else "°C"
+        current_unit = _snapshot_unit(snap) or current_unit
         offset = (snap.get("timestamp") or start) - start
         for name, extract in EXTRACTORS.items():
             value = extract(shadow)
             if value is None:
                 continue
             try:
-                series[name].append([offset, round(float(value), 1)])
+                value = float(value)
+                if unit and current_unit and current_unit != unit:
+                    value = TemperatureConverter.convert(value, current_unit, unit)
+                series[name].append([offset, round(value, 1)])
             except (TypeError, ValueError):
                 continue
 

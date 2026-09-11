@@ -21,13 +21,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import KamadoJoeConfigEntry
-from .const import TARGET_OFF, active_errors, error_text, probe_numbers, sensor_keys
+from .const import active_errors, error_text, probe_numbers, sensor_keys, target_or_none
 from .entity import KamadoJoeEntity
 
 
 def _heat_target(r: dict[str, Any]) -> Any:
-    val = r.get("heat", {}).get("t2", {}).get("trgt")
-    return None if val is None or val <= 0 or val == TARGET_OFF else val
+    return target_or_none(r.get("heat", {}).get("t2", {}).get("trgt"))
 
 
 def _probe_temp(n: int) -> Callable[[dict[str, Any]], Any]:
